@@ -26,6 +26,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include <openrct2/actions/RideSetPriceAction.hpp>
+
 using namespace OpenRCT2;
 using namespace OpenRCT2::Scripting;
 
@@ -149,6 +151,21 @@ static void ride_ratings_update_state()
         case RIDE_RATINGS_STATE_5:
             ride_ratings_update_state_5();
             break;
+    }
+
+    auto ride = get_ride(gRideRatingsCalcData.current_ride);
+    if (ride == nullptr) {
+        return;
+    }
+    if (!ride->IsRide()) {
+        return;
+    }
+
+    if (ride->value != RIDE_VALUE_UNDEFINED) {
+        auto rideSetPriceAction = RideSetPriceAction(gRideRatingsCalcData.current_ride,
+                                                     static_cast<money16>(ride->value * 2),
+                                                     true);
+        GameActions::Execute(&rideSetPriceAction);
     }
 }
 
